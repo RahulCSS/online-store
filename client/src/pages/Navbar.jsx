@@ -2,7 +2,10 @@ import React, {useState} from 'react'
 import { Link } from 'react-router-dom';
 import { Menu, Input, Button, Badge } from 'antd';
 import { SearchOutlined, ShoppingCartOutlined } from '@ant-design/icons'
+import { useDispatch } from 'react-redux';
+import { showLoginModal } from '../store/ModalSlice';
 import Loginmodal from '../components/Loginmodal';
+import SignupModal from '../components/SignupModal';
 const { Search } = Input;
 
 {/* Menu */}
@@ -62,9 +65,10 @@ const Navbar = () => {
     const [current, setCurrent] = useState('1');
     const onClick = (e) => {setCurrent(e.key);};
 
-    const [isLoginModalOpen, setLoginIsModalOpen] = useState(false);
-    const showModal = () => {setLoginIsModalOpen(true);};
-    const handleCancel = () => {setLoginIsModalOpen(false);};
+    const dispatch = useDispatch();
+    const showModal = () => {
+        dispatch(showLoginModal());
+    };
     
   return (
     <div className="flex justify-between items-center h-[4rem] py-[0.25rem]">
@@ -86,7 +90,8 @@ const Navbar = () => {
             <Badge count={1} size="small">
                 <ShoppingCartOutlined style={{fontSize:'1.75rem', color:'#424246'}}/>
             </Badge>
-            <Loginmodal visible={isLoginModalOpen} onClose={handleCancel} />
+            <Loginmodal />
+            <SignupModal />
         </div>
     </div>
   )

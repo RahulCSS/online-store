@@ -1,34 +1,42 @@
 import React from 'react'
-import { Modal, Form, Input, Button } from "antd";
-import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
+import { Modal, Form, Input, Button, Flex } from "antd";
+import { LockOutlined, MailOutlined } from '@ant-design/icons';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { hideLoginModal, showSignUpModal } from '../store/ModalSlice';
 
-const Loginmodal = ({ visible, onClose }) => {
+const Loginmodal = () => {
 
     const [form] = Form.useForm();
-    const handleSubmit = (values) => {
+    const dispatch = useDispatch();
+    const visible = useSelector((state) => state.modal.isLoginModalOpen);
+    const submit = (values) => {
         console.log('Form values:', values);
-        onClose();
+        dispatch(hideLoginModal());
+    };
+    const handleRegisterClick = () => {
+        dispatch(hideLoginModal()); 
+        dispatch(showSignUpModal());
     };
     
   return (
     <Modal
         title="Login"
         open={visible}
-        onCancel={onClose}
+        onCancel={() => dispatch(hideLoginModal())}
         footer={null}
         destroyOnClose={true}>
         
         <Form
             form={form}
             layout="vertical"
-            onFinish={handleSubmit}
+            onFinish={submit}
             name="login"
             initialValues={{ remember: true }}
             style={{ width: 240}}
             >
             <Form.Item name="email" rules={[{required: true,message: 'Please input your E-mail!',},]}>
-                <Input prefix={<MailOutlined />} placeholder="Username" />
+                <Input prefix={<MailOutlined />} placeholder="E-mail" />
             </Form.Item>
             <Form.Item name="password" rules={[{ required: true, message: 'Please input your Password!' }]}>
                 <Input prefix={<LockOutlined />} type="password" placeholder="Password" />
@@ -38,8 +46,9 @@ const Loginmodal = ({ visible, onClose }) => {
             </Form.Item>
             <Form.Item>
                 <Button block type="primary" htmlType="submit">Log in</Button>
-                or 
-                <a >Register now!</a>
+                <Flex justify="center" align="center">
+                <a onClick={handleRegisterClick} >New User, Register now!</a>
+                </Flex>
             </Form.Item>
         </Form>
     </Modal>
