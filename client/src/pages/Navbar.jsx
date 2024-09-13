@@ -2,8 +2,10 @@ import React, {useState} from 'react'
 import { Link } from 'react-router-dom';
 import { Menu, Input, Button, Badge } from 'antd';
 import { SearchOutlined, ShoppingCartOutlined } from '@ant-design/icons'
-
 const { Search } = Input;
+
+{/* Menu */}
+
 const items = [
     {
       label: (<Link to="/">Home</Link>),
@@ -49,15 +51,11 @@ const items = [
     },
     {
       key: 4,
-      label: (
-        <a href="" target="_blank" rel="noopener noreferrer">
-          Getapp
-        </a>
-      ),
+      label: "Getapp",
     },
   ];
 
-  const onSearch = (value, _e, info) => console.log(info?.source, value);
+const onSearch = (value, _e, info) => console.log(info?.source, value);
 
 const Navbar = () => {
     const [current, setCurrent] = useState('1');
