@@ -17,14 +17,14 @@ const loginUser = async (req,res) =>{
     try{
         const user = await userModel.findOne({email});
         if(!user){
-            return res.status(400).json({sucess:false , message: "User doesn't exists"})
+            return res.json({sucess:false , message: "User doesn't exists"})
         }
         const isMatch = await bcrypt.compare(password,user.password);
         if (!isMatch) {
             return res.json({success:false,message:"Invalid credentials"})
         }
         const token = createToken (user._id);
-        res. json ({success:true, token});
+        res. json ({success:true, message:"User Logged in Successfully",token});
     }catch(error){
         console.log(error);
         res.json({success:false, message: "Error"});
@@ -38,7 +38,7 @@ const registerUser = async (req,res) =>{
         //checking if user already registered
         const exists = await userModel.findOne({email});
         if(exists){
-            return res.status(400).json({sucess:false , message: "User already exists"})
+            return res.json({success:false , message: "User already exists"})
         }
 
         // validating email format & strong password

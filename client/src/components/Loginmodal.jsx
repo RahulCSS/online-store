@@ -1,23 +1,41 @@
 import React from 'react'
-import { Modal, Form, Input, Button, Flex } from "antd";
+import { Modal, Form, Input, Button, Flex, message } from "antd";
 import { LockOutlined, MailOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { hideLoginModal, showSignUpModal } from '../store/ModalSlice';
+import { LoginUser } from '../apicalls/users';
 
 const Loginmodal = () => {
 
     const [form] = Form.useForm();
     const dispatch = useDispatch();
     const visible = useSelector((state) => state.modal.isLoginModalOpen);
-    const submit = (values) => {
-        console.log('Form values:', values);
-        dispatch(hideLoginModal());
-    };
+    
     const handleRegisterClick = () => {
         dispatch(hideLoginModal()); 
         dispatch(showSignUpModal());
     };
+
+    const submit = async (values) => {
+        dispatch(hideLoginModal());
+        console.log('Form values:', values);
+        try{
+            const response = await LoginUser(values);
+            if(response.success){
+                message.success(response.message);
+                localStorage.setItem('token', response.token);
+                //console.log(response.message);
+            }else{
+                message.error(response.message);
+                //console.error(response.message);
+            }
+        }catch(error){
+            message.error(error.message);
+            //console.error(response.message);
+        }
+        form.resetFields();
+      };
     
   return (
     <Modal

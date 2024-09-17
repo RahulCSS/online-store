@@ -1,18 +1,36 @@
 import React from 'react'
-import { Modal, Form, Input, Button, Flex } from "antd";
+import { Modal, Form, Input, Button, Flex, message } from "antd";
 import { ArrowRightOutlined, UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from'react-redux';
 import { hideSignUpModal,showLoginModal } from '../store/ModalSlice';
+import { RegisterUser } from '../apicalls/users';
 
 const SignupModal = () => {
     const dispatch = useDispatch();
     const visible = useSelector((state) => state.modal.isSignUpModalVisible);
     const [form] = Form.useForm();
 
-    const handleSubmit = (values) => {
-        console.log('Sign Up Form values:', values);
-        dispatch(hideSignUpModal());
+    const handleSubmit = async (values) => {
+      dispatch(hideSignUpModal());
+      const { confirmPassword , ...filteredValues } = values;
+      //console.log('Sign Up Form values:', values);
+      //console.log(filteredValues);
+      try{
+        const response = await RegisterUser(filteredValues);
+        if(response.success){
+          message.success(response.message);
+          //console.log(response.message);
+        }else{
+          message.error(response.message);
+          //console.error(response.message);
+        }
+      }catch(error){
+        message.error(error.message);
+        //console.error(error.message);
+      }
+      form.resetFields();
     };
+
     const handleRegisterClick = () => {
         dispatch(hideSignUpModal()); 
         dispatch(showLoginModal());
@@ -32,7 +50,7 @@ const SignupModal = () => {
         onFinish={handleSubmit}
       >
         <Form.Item
-          name="username"
+          name="name"
           label="Username"
           rules={[{ required: true, message: 'Please input your username!' }]}
         >

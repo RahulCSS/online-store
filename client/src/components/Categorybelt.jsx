@@ -30,7 +30,7 @@ const Categorybelt = () => {
         if(selectedCategory === index) setselectedCategory(null);
         else setselectedCategory(index);
     };
-    console.log(selectedCategory);
+    //console.log(selectedCategory);
 
     {/* Scrollable menu to mouse drag */}
     const scrollContainerRef = useRef(null);
