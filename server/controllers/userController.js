@@ -23,9 +23,9 @@ const loginUser = async (req,res) =>{
         if (!isMatch) {
             return res.json({success:false,message:"Invalid credentials"})
         }
-        const token = createToken (user._id);
+        const accessToken = createToken (user._id);
         const roles = user.role;
-        res.json ({success:true, message:"User Logged in Successfully",token,roles});
+        res.json ({success:true, message:"User Logged in Successfully",accessToken,roles});
     }catch(error){
         console.log(error);
         res.json({success:false, message: "Error"});

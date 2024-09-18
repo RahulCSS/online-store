@@ -19,11 +19,10 @@ const App = () => {
             <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
           </Flex>
         </div>
-      )} 
-      <Navbar/>
+      )} <Navbar/>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin" element={<Admin/>} />
           <Route path="/seller" element={<Seller />} />
           <Route path="/delivery" element={<Delivery />} />
         </Routes>
