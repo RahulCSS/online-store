@@ -1,12 +1,19 @@
 import React, {useState} from 'react'
-import { Link } from 'react-router-dom';
-import { Menu, Input, Button, Badge } from 'antd';
-import { SearchOutlined, ShoppingCartOutlined } from '@ant-design/icons'
-import { useDispatch } from 'react-redux';
-import { showLoginModal } from '../store/ModalSlice';
+import { Link, useNavigate } from 'react-router-dom';
+import { useEffect } from'react';
+import { useDispatch, useSelector } from 'react-redux';
+//Components
+import { Menu, Input, Button, Badge, message } from 'antd';
+const { Search } = Input;
+import { SearchOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import Loginmodal from '../components/Loginmodal';
 import SignupModal from '../components/SignupModal';
-const { Search } = Input;
+// API
+import { GetCurrentUser } from '../apicalls/users';
+// Actions
+import { showLoginModal } from '../store/ModalSlice';
+import { setUser } from '../store/UserSlice';
+import { showLoading,hideLoading } from '../store/LoaderSlice';
 
 {/* Menu */}
 
@@ -61,15 +68,19 @@ const items = [
 
 const onSearch = (value, _e, info) => console.log(info?.source, value);
 
-const Navbar = () => {
-    const [current, setCurrent] = useState('1');
-    const onClick = (e) => {setCurrent(e.key);};
 
-    const dispatch = useDispatch();
-    const showModal = () => {
-        dispatch(showLoginModal());
-    };
+
+const Navbar = () => {
+  const dispatch = useDispatch();
+  const [current, setCurrent] = useState('1');
+  const onClick = (e) => {setCurrent(e.key);};
+  const showModal = () => {
+      dispatch(showLoginModal());
+  };
     
+  const roles = useSelector((state)=> state.users.role);
+  console.log(roles);
+ 
   return (
     <div className="flex justify-between items-center h-[4rem] py-[0.25rem]">
 

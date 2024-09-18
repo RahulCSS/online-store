@@ -4,12 +4,15 @@ import { LockOutlined, MailOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { hideLoginModal, showSignUpModal } from '../store/ModalSlice';
+import { setUser } from '../store/UserSlice';
 import { LoginUser } from '../apicalls/users';
+import { useNavigate } from 'react-router-dom';
 
 const Loginmodal = () => {
 
     const [form] = Form.useForm();
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const visible = useSelector((state) => state.modal.isLoginModalOpen);
     
     const handleRegisterClick = () => {
@@ -19,13 +22,15 @@ const Loginmodal = () => {
 
     const submit = async (values) => {
         dispatch(hideLoginModal());
-        console.log('Form values:', values);
+        //console.log('Form values:', values);
         try{
             const response = await LoginUser(values);
             if(response.success){
                 message.success(response.message);
                 localStorage.setItem('token', response.token);
+                dispatch(setUser({role: response.roles, token: response.token}));
                 //console.log(response.message);
+                //console.log(role.role);
             }else{
                 message.error(response.message);
                 //console.error(response.message);
@@ -35,7 +40,9 @@ const Loginmodal = () => {
             //console.error(response.message);
         }
         form.resetFields();
-      };
+      }; 
+
+    
     
   return (
     <Modal
