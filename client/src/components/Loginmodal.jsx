@@ -26,6 +26,7 @@ const Loginmodal = () => {
             if(response.success){
                 message.success(response.message);
                 localStorage.setItem('token', response.userData.token);
+                dispatch(setUser({user:response.userData, role:response.userData.role, name:response.userData.name}));
             }else{
                 message.error(response.message);
                 //console.error(response.message);

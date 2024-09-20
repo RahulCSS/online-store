@@ -81,19 +81,16 @@ const menuItems = [
         const response = await GetCurrentUser();
         if (response.success) {
           dispatch(setUser({user:response.data, role:response.data.role, name:response.data.name}));
-          console.log(user,role,name);
         } else {
-          console.log(1);
           message.error(response.message);
           handleClear();
         }
       } catch (error) {
-        console.log(2);
         message.error('Failed to fetch user data, please try again later');
         handleClear();
       }
     };
-    console.log(user,role,name);
+
     const handleClear =() => {
       dispatch(clearUser());
       localStorage.removeItem('token');
@@ -143,16 +140,14 @@ const menuItems = [
   },[]);
 
   useEffect(() => {
-    console.log(user,role,name);
-    if (role === 'admin') {
-      navigate('/admin');
-    } else if (role ==='seller') {
-      navigate('/seller');
-    } else if (role === 'delivery') {
-      navigate('/delivery');
-    }
+      if (role === 'admin') {
+          navigate('/admin');
+      } else if (role === 'seller') {
+          navigate('/seller');
+      } else if (role === 'delivery') {
+          navigate('/delivery');
+      }
   },[role]);
-  
 
   return (
     <div className="flex justify-between items-center h-[4rem] py-[0.25rem]">
@@ -160,21 +155,21 @@ const menuItems = [
     {/* 1. Logo */}    
         <p className="text-[--logoColor] text-[3rem] tracking-[.5rem] w-[7rem] px-[.5rem]">Zip</p>
     {/* 2. Navigation Menu */}
-        <Menu className="gap-[15px] text-[--menuColor] text-[1.25rem] px-[.5rem]" onClick={onClick} selectedKeys={[current]} mode="horizontal" items={menuItems} />
+        {!role && <Menu className="gap-[15px] text-[--menuColor] text-[1.25rem] px-[.5rem]" onClick={onClick} selectedKeys={[current]} mode="horizontal" items={menuItems} />}
     {/* 3. Search & Cart */}
         <div className="flex items-center gap-[10px]">
-            <Search
+        {!role && <Search
               placeholder="Search Products..."
               allowClear
               enterButton={<SearchOutlined />}
               style={{ width: '15rem', height: '2rem'}}
               onSearch={onSearch}
-            />
+            />}
             {!role && <Button onClick={showModal}>Login</Button>}
-            <Badge count={1} size="small">
+            {!role && <Badge count={1} size="small">
                 <ShoppingCartOutlined style={{fontSize:'1.75rem', color:'#424246'}}/>
-            </Badge>
-            <Dropdown menu={{ items }} placement="bottomLeft">
+            </Badge>}
+            {role && <Dropdown menu={{ items }} placement="bottomLeft">
                         <a onClick={(e) => e.preventDefault()}>
                           <Space>
                             <Avatar
@@ -186,7 +181,7 @@ const menuItems = [
                             />
                           </Space>
                         </a>
-                      </Dropdown>
+                      </Dropdown>}
             <Loginmodal />
             <SignupModal />
         </div>
