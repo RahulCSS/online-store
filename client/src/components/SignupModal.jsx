@@ -19,6 +19,12 @@ const SignupModal = () => {
         const response = await RegisterUser(filteredValues);
         if(response.success){
           message.success(response.message);
+          message.info({
+            content: "You can login now.",
+          });
+          setTimeout(() => {
+            handleRegisterClick();
+          },1000);
           //console.log(response.message);
         }else{
           message.error(response.message);

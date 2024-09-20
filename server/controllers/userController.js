@@ -23,9 +23,14 @@ const loginUser = async (req,res) =>{
         if (!isMatch) {
             return res.json({success:false,message:"Invalid credentials"})
         }
+        // Create token and save in user database on every successful login:
         const accessToken = createToken (user._id);
-        const roles = user.role;
-        res.json ({success:true, message:"User Logged in Successfully",accessToken,roles});
+        user.token = accessToken;
+        await user.save();
+        // Desturcturing to exclude data from user:
+        const { password:_, __v:__, cart:___,...userData } = user.toObject();
+        const cart = user.cart;
+        res.json ({success:true, message:"User Logged in Successfully",userData,cart});
     }catch(error){
         console.log(error);
         res.json({success:false, message: "Error"});
@@ -60,10 +65,33 @@ const registerUser = async (req,res) =>{
         })
         const user = await newUser.save();
         const token = createToken (user._id);
-        res.json({success:true, token, message: "User saved successfully"}) ;
+        res.json({success:true, token, message: "User resgistered successfully"}) ;
     }catch(error){
         console.log(error);
         res.json({success:false, message: "Error"});
-    }
+    };
 };
-export {loginUser, registerUser};
+
+// Getting current user details with token verification and validation of user id in request body  
+const getCurrentUser = async (req,res) =>{
+    try{
+        const user = await userModel.findById(req.body.userId).select('-password');
+        if (!user) {
+            return res.send({
+                success: false,
+                message: 'User not found'
+            });
+        }
+        return res.send({
+            success: true,
+            message: 'User details retrieved successfully',
+            data: user
+        });
+    }catch(err){
+        return res.send({
+            success: false,
+            message: 'Something went wrong'
+        });
+    }
+}; 
+export {loginUser, registerUser, getCurrentUser};

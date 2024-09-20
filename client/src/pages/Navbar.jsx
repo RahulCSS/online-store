@@ -11,11 +11,10 @@ import SignupModal from '../components/SignupModal';
 import { GetCurrentUser } from '../apicalls/users';
 // Actions
 import { showLoginModal } from '../store/ModalSlice';
-import { clearUser } from '../store/UserSlice';
+import { setUser, clearUser } from '../store/UserSlice';
 import { showLoading,hideLoading } from '../store/LoaderSlice';
 
 {/* Menu */}
-
 const menuItems = [
     {
       label: (<Link to="/">Home</Link>),
@@ -64,17 +63,42 @@ const menuItems = [
       label: "Getapp",
     },
   ];
-const onSearch = (value, _e, info) => console.log(info?.source, value);
-
-
-const Navbar = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [current, setCurrent] = useState('1');
-  const onClick = (e) => {setCurrent(e.key);};
-  const showModal = () => {
+  const onSearch = (value, _e, info) => console.log(info?.source, value);
+  
+  const Navbar = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [current, setCurrent] = useState('1');
+    const onClick = (e) => {setCurrent(e.key);};
+    const {user,role,name} = useSelector((state)=> state.users);
+    const showModal = () => {
       dispatch(showLoginModal());
-  };
+    };
+
+    // console.log(user);
+    const getpresentUser = async () => {
+      try {
+        const response = await GetCurrentUser();
+        if (response.success) {
+          dispatch(setUser({user:response.data, role:response.data.role, name:response.data.name}));
+          console.log(user,role,name);
+        } else {
+          console.log(1);
+          message.error(response.message);
+          handleClear();
+        }
+      } catch (error) {
+        console.log(2);
+        message.error('Failed to fetch user data, please try again later');
+        handleClear();
+      }
+    };
+    console.log(user,role,name);
+    const handleClear =() => {
+      dispatch(clearUser());
+      localStorage.removeItem('token');
+      navigate('/');
+    };
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -87,7 +111,7 @@ const Navbar = () => {
     });
     setTimeout(() => {
       navigate("/");
-    }, 500);
+    }, 1000);
   };
   
   const items = [
@@ -108,42 +132,49 @@ const Navbar = () => {
       danger: true,
     },
   ];
-  const roles = useSelector((state)=> state.users.role);
-  useEffect(()=> {
-    if(roles === 'admin'){
-        console.log(4);
-        navigate('/admin');
+  
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      getpresentUser();
+    } else {
+      navigate('/');
     }
-    else if(roles === 'seller'){
-        console.log(5);
-        navigate('/seller');
+  },[]);
+
+  useEffect(() => {
+    console.log(user,role,name);
+    if (role === 'admin') {
+      navigate('/admin');
+    } else if (role ==='seller') {
+      navigate('/seller');
+    } else if (role === 'delivery') {
+      navigate('/delivery');
     }
-    else if(roles === 'delivery'){
-        console.log(6);
-        navigate('/delivery');
-    }
-  },[roles]);
+  },[role]);
+  
+
   return (
     <div className="flex justify-between items-center h-[4rem] py-[0.25rem]">
 
     {/* 1. Logo */}    
         <p className="text-[--logoColor] text-[3rem] tracking-[.5rem] w-[7rem] px-[.5rem]">Zip</p>
     {/* 2. Navigation Menu */}
-        {(!roles || roles!='user') && <Menu className="gap-[15px] text-[--menuColor] text-[1.25rem] px-[.5rem]" onClick={onClick} selectedKeys={[current]} mode="horizontal" items={menuItems} />}
+        <Menu className="gap-[15px] text-[--menuColor] text-[1.25rem] px-[.5rem]" onClick={onClick} selectedKeys={[current]} mode="horizontal" items={menuItems} />
     {/* 3. Search & Cart */}
         <div className="flex items-center gap-[10px]">
             <Search
-            placeholder="Search Products..."
-            allowClear
-            enterButton={<SearchOutlined />}
-            style={{ width: '15rem', height: '2rem'}}
-            onSearch={onSearch}
+              placeholder="Search Products..."
+              allowClear
+              enterButton={<SearchOutlined />}
+              style={{ width: '15rem', height: '2rem'}}
+              onSearch={onSearch}
             />
-            {!roles && <Button onClick={showModal}>Login</Button>}
+            {!role && <Button onClick={showModal}>Login</Button>}
             <Badge count={1} size="small">
                 <ShoppingCartOutlined style={{fontSize:'1.75rem', color:'#424246'}}/>
             </Badge>
-            {roles && (<Dropdown menu={{ items }}>
+            <Dropdown menu={{ items }} placement="bottomLeft">
                         <a onClick={(e) => e.preventDefault()}>
                           <Space>
                             <Avatar
@@ -155,8 +186,7 @@ const Navbar = () => {
                             />
                           </Space>
                         </a>
-                      </Dropdown>)
-            }
+                      </Dropdown>
             <Loginmodal />
             <SignupModal />
         </div>

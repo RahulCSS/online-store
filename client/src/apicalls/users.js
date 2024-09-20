@@ -21,7 +21,7 @@ export const LoginUser = async (payload) => {
     }
 };
 
-//*Get Curretn User
+//*Get Current User
 export const GetCurrentUser = async () => {
     try{
         const response = await axiosInstance.get("/api/user/getcurrentuser",{

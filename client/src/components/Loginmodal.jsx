@@ -12,9 +12,7 @@ const Loginmodal = () => {
 
     const [form] = Form.useForm();
     const dispatch = useDispatch();
-    const navigate = useNavigate();
     const visible = useSelector((state) => state.modal.isLoginModalOpen);
-    const {role, token} = useSelector((state) => state.users);
     const handleRegisterClick = () => {
         dispatch(hideLoginModal()); 
         dispatch(showSignUpModal());
@@ -27,21 +25,7 @@ const Loginmodal = () => {
             const response = await LoginUser(values);
             if(response.success){
                 message.success(response.message);
-                localStorage.setItem('token', response.accessToken);
-                dispatch(setUser({role: response.roles, token: response.accessToken}));
-                //console.log(response.message);
-                if(role === 'admin'){
-                    console.log(1);
-                    navigate('/admin');
-                }
-                else if(role === 'seller'){
-                    console.log(2);
-                    navigate('/seller');
-                }
-                else if(role === 'delivery'){
-                    console.log(3);
-                    navigate('/delivery');
-                }
+                localStorage.setItem('token', response.userData.token);
             }else{
                 message.error(response.message);
                 //console.error(response.message);
